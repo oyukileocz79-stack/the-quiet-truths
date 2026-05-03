@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — The Quiet Truths</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #0f0508;
+      color: #e8d5da;
+      min-height: 100vh;
+    }
+
+    /* ─── LOGIN SCREEN ─── */
+    #login-screen {
+      position: fixed; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #0f0508 0%, #1a0810 50%, #0f0508 100%);
+      z-index: 1000;
+    }
+
+    #login-screen.hidden { display: none; }
+
+    .login-box {
+      background: linear-gradient(135deg, #1e0a10, #2a0f18);
+      border: 1px solid rgba(192,96,122,0.25);
+      border-radius: 16px;
+      padding: 48px 40px;
+      width: 100%; max-width: 400px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      text-align: center;
+    }
+
+    .login-logo {
+      font-family: 'Lora', serif;
+      font-size: 22px; color: #f5d0d8;
+      margin-bottom: 6px;
+    }
+
+    .login-sub {
+      font-size: 11px; color: #8a5060;
+      letter-spacing: 3px; text-transform: uppercase;
+      margin-bottom: 36px;
+    }
+
+    .login-label {
+      display: block; text-align: left;
+      font-size: 11px; color: #a08090;
+      letter-spacing: 2px; text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .login-input {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(192,96,122,0.25);
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: #f5d0d8;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      margin-bottom: 20px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .login-input:focus { border-color: #c0607a; }
+
+    .login-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #8b2040, #c0607a);
+      border: none; border-radius: 8px;
+      padding: 14px;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px; font-weight: 600;
+      letter-spacing: 2px; text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .login-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    .login-error {
+      color: #e87090; font-size: 13px;
+      margin-top: 12px; display: none;
+    }
+
+    /* ─── DASHBOARD ─── */
+    #dashboard { display: none; }
+    #dashboard.visible { display: flex; }
+
+    /* Sidebar */
+    #sidebar {
+      width: 240px; min-height: 100vh;
+      background: linear-gradient(180deg, #1a0810 0%, #120508 100%);
+      border-right: 1px solid rgba(192,96,122,0.15);
+      padding: 30px 0;
+      position: fixed; top: 0; left: 0;
+      display: flex; flex-direction: column;
+      z-index: 100;
+    }
+
+    .sidebar-logo {
+      padding: 0 24px 30px;
+      border-bottom: 1px solid rgba(192,96,122,0.1);
+      margin-bottom: 20px;
+    }
+
+    .sidebar-logo-title {
+      font-family: 'Lora', serif;
+      font-size: 16px; color: #f5d0d8;
+      margin-bottom: 3px;
+    }
+
+    .sidebar-logo-sub {
+      font-size: 10px; color: #6a3040;
+      letter-spacing: 2px; text-transform: uppercase;
+    }
+
+    .nav-section {
+      padding: 0 16px;
+      margin-bottom: 8px;
+    }
+
+    .nav-section-label {
+      font-size: 9px; color: #5a2535;
+      letter-spacing: 3px; text-transform: uppercase;
+      padding: 0 8px; margin-bottom: 6px;
+    }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #9a7080;
+      font-size: 13px;
+      margin-bottom: 2px;
+    }
+
+    .nav-item:hover { background: rgba(192,96,122,0.1); color: #f5d0d8; }
+    .nav-item.active { background: rgba(192,96,122,0.15); color: #f5d0d8; }
+    .nav-item.active .nav-icon { color: #c0607a; }
+
+    .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 20px 24px 0;
+      border-top: 1px solid rgba(192,96,122,0.1);
+    }
+
+    .sidebar-footer-btn {
+      display: flex; align-items: center; gap: 8px;
+      color: #6a3040; font-size: 12px;
+      cursor: pointer; transition: color 0.2s;
+      padding: 8px 0;
+    }
+
+    .sidebar-footer-btn:hover { color: #c0607a; }
+
+    /* Main content */
+    #main {
+      margin-left: 240px;
+      padding: 40px;
+      flex: 1;
+      min-height: 100vh;
+    }
+
+    /* Top bar */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 36px;
+    }
+
+    .topbar-title {
+      font-family: 'Lora', serif;
+      font-size: 26px; color: #f5d0d8;
+    }
+
+    .topbar-sub {
+      font-size: 13px; color: #8a6070;
+      margin-top: 3px;
+    }
+
+    .topbar-actions { display: flex; gap: 12px; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #8b2040, #c0607a);
+      border: none; border-radius: 8px;
+      padding: 10px 20px;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    .btn-secondary {
+      background: rgba(192,96,122,0.1);
+      border: 1px solid rgba(192,96,122,0.3);
+      border-radius: 8px;
+      padding: 10px 20px;
+      color: #c0909a;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      cursor: pointer; transition: all 0.2s;
+    }
+
+    .btn-secondary:hover { background: rgba(192,96,122,0.2); color: #f5d0d8; }
+
+    /* Panels */
+    .panel {
+      display: none;
+    }
+
+    .panel.active { display: block; }
+
+    /* Cards */
+    .card {
+      background: linear-gradient(135deg, #1e0a10, #250d14);
+      border: 1px solid rgba(192,96,122,0.15);
+      border-radius: 12px;
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    .card-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-family: 'Lora', serif;
+      font-size: 17px; color: #f5d0d8;
+      margin-bottom: 4px;
+    }
+
+    .card-desc {
+      font-size: 12px; color: #8a6070;
+      line-height: 1.5; max-width: 500px;
+    }
+
+    .card-badge {
+      background: rgba(192,96,122,0.15);
+      border: 1px solid rgba(192,96,122,0.3);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 10px; color: #c0909a;
+      letter-spacing: 1px; text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* Form elements */
+    .form-group { margin-bottom: 20px; }
+
+    .form-label {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; color: #a08090;
+      letter-spacing: 1px; text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .form-label-hint {
+      font-size: 11px; color: #6a4050;
+      text-transform: none; letter-spacing: 0;
+      font-weight: 400;
+    }
+
+    .form-textarea {
+      width: 100%;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(192,96,122,0.2);
+      border-radius: 8px;
+      padding: 14px 16px;
+      color: #e8d5da;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s;
+      min-height: 120px;
+    }
+
+    .form-textarea:focus { border-color: #c0607a; }
+    .form-textarea::placeholder { color: #4a2535; }
+
+    .form-input {
+      width: 100%;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(192,96,122,0.2);
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: #e8d5da;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus { border-color: #c0607a; }
+
+    /* Status indicator */
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    .status-dot.active { background: #4caf50; box-shadow: 0 0 6px rgba(76,175,80,0.5); }
+    .status-dot.inactive { background: #6a4050; }
+
+    /* Info box */
+    .info-box {
+      background: rgba(192,96,122,0.07);
+      border: 1px solid rgba(192,96,122,0.2);
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: 12px; color: #a08090;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      display: flex; gap: 10px;
+    }
+
+    .info-box-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 30px; right: 30px;
+      background: linear-gradient(135deg, #1e0a10, #2a0f18);
+      border: 1px solid rgba(192,96,122,0.4);
+      border-radius: 10px;
+      padding: 14px 20px;
+      color: #f5d0d8;
+      font-size: 13px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      z-index: 9999;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    #toast.show { transform: translateY(0); opacity: 1; }
+    #toast.success .toast-icon { color: #4caf50; }
+    #toast.error .toast-icon { color: #e87090; }
+
+    /* Stats row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #1e0a10, #250d14);
+      border: 1px solid rgba(192,96,122,0.15);
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .stat-label {
+      font-size: 10px; color: #6a4050;
+      letter-spacing: 2px; text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-family: 'Lora', serif;
+      font-size: 28px; color: #f5d0d8;
+      margin-bottom: 4px;
+    }
+
+    .stat-sub { font-size: 11px; color: #8a6070; }
+
+    /* Toggle switch */
+    .toggle-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(192,96,122,0.08);
+    }
+
+    .toggle-row:last-child { border-bottom: none; }
+
+    .toggle-info { flex: 1; }
+    .toggle-title { font-size: 13px; color: #e8d5da; margin-bottom: 3px; }
+    .toggle-desc { font-size: 11px; color: #6a4050; }
+
+    .toggle {
+      position: relative;
+      width: 44px; height: 24px;
+      flex-shrink: 0; margin-left: 16px;
+    }
+
+    .toggle input { opacity: 0; width: 0; height: 0; }
+
+    .toggle-slider {
+      position: absolute; inset: 0;
+      background: rgba(192,96,122,0.15);
+      border: 1px solid rgba(192,96,122,0.2);
+      border-radius: 24px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      width: 16px; height: 16px;
+      left: 3px; top: 3px;
+      background: #6a4050;
+      border-radius: 50%;
+      transition: all 0.3s;
+    }
+
+    .toggle input:checked + .toggle-slider { background: rgba(192,96,122,0.3); border-color: #c0607a; }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(20px); background: #c0607a; }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, rgba(192,96,122,0.2), transparent);
+      margin: 24px 0;
+    }
+
+    /* Code preview */
+    .code-preview {
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(192,96,122,0.15);
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      color: #a08090;
+      line-height: 1.6;
+      word-break: break-all;
+      max-height: 80px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .code-preview::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 30px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.4));
+    }
+
+    /* Step list */
+    .step-list { list-style: none; }
+    .step-list li {
+      display: flex; gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(192,96,122,0.06);
+      font-size: 13px; color: #9a7080;
+      line-height: 1.5;
+    }
+
+    .step-list li:last-child { border-bottom: none; }
+
+    .step-num {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: rgba(192,96,122,0.15);
+      border: 1px solid rgba(192,96,122,0.3);
+      color: #c0909a;
+      font-size: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      #sidebar { width: 100%; min-height: auto; position: relative; }
+      #main { margin-left: 0; padding: 20px; }
+      #dashboard.visible { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── LOGIN SCREEN ─── -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">The Quiet Truths</div>
+    <div class="login-sub">Admin Dashboard</div>
+    <label class="login-label" for="admin-pass">Password</label>
+    <input class="login-input" type="password" id="admin-pass" placeholder="Enter admin password" onkeydown="if(event.key==='Enter') doLogin()" />
+    <button class="login-btn" onclick="doLogin()">Sign In</button>
+    <div class="login-error" id="login-error">Incorrect password. Please try again.</div>
+  </div>
+</div>
+
+<!-- ─── DASHBOARD ─── -->
+<div id="dashboard">
+
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-title">The Quiet Truths</div>
+      <div class="sidebar-logo-sub">Admin Dashboard</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Overview</div>
+      <div class="nav-item active" onclick="showPanel('overview', this)">
+        <span class="nav-icon">◈</span> Overview
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Monetization</div>
+      <div class="nav-item" onclick="showPanel('adsense', this)">
+        <span class="nav-icon">$</span> AdSense & Ads
+      </div>
+      <div class="nav-item" onclick="showPanel('adstxt', this)">
+        <span class="nav-icon">📄</span> ads.txt Manager
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Site</div>
+      <div class="nav-item" onclick="showPanel('settings', this)">
+        <span class="nav-icon">⚙</span> Site Settings
+      </div>
+      <div class="nav-item" onclick="showPanel('stories', this)">
+        <span class="nav-icon">📖</span> Stories
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-btn" onclick="window.open('index.html','_blank')">
+        <span>↗</span> View Live Site
+      </div>
+      <div class="sidebar-footer-btn" onclick="doLogout()">
+        <span>⎋</span> Sign Out
+      </div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div id="main">
+
+    <!-- ─── OVERVIEW PANEL ─── -->
+    <div class="panel active" id="panel-overview">
+      <div class="topbar">
+        <div>
+          <div class="topbar-title">Overview</div>
+          <div class="topbar-sub">Welcome back, Cynthia. Here's your site at a glance.</div>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn-secondary" onclick="window.open('index.html','_blank')">↗ View Site</button>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Total Stories</div>
+          <div class="stat-value">18</div>
+          <div class="stat-sub">All published</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">AdSense Status</div>
+          <div class="stat-value" id="overview-adsense-status" style="font-size:16px; padding-top:6px;">
+            <span class="status-dot inactive"></span>Not configured
+          </div>
+          <div class="stat-sub">Paste code to activate</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">ads.txt Status</div>
+          <div class="stat-value" id="overview-adstxt-status" style="font-size:16px; padding-top:6px;">
+            <span class="status-dot inactive"></span>Not set
+          </div>
+          <div class="stat-sub">Required by Google</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Site</div>
+          <div class="stat-value" style="font-size:16px; padding-top:6px;">
+            <span class="status-dot active"></span>Live
+          </div>
+          <div class="stat-sub">The Quiet Truths</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Quick Setup Guide</div>
+            <div class="card-desc">Follow these steps to monetize your flip book site with Google AdSense.</div>
+          </div>
+        </div>
+        <ul class="step-list">
+          <li>
+            <span class="step-num">1</span>
+            <span>Sign up or log in at <strong style="color:#c0909a;">google.com/adsense</strong> and add your website URL to your AdSense account.</span>
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <span>Go to <strong style="color:#c0909a;">AdSense → Ads → By ad unit</strong> and create a new Display ad unit. Copy the full <code style="color:#c0909a;">&lt;script&gt;</code> code they give you.</span>
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <span>Paste that code into the <strong style="color:#c0909a;">AdSense & Ads</strong> section of this dashboard. It will automatically appear at the bottom of every story page.</span>
+          </li>
+          <li>
+            <span class="step-num">4</span>
+            <span>Go to <strong style="color:#c0909a;">AdSense → Account → ads.txt</strong> and copy the line they provide. Paste it into the <strong style="color:#c0909a;">ads.txt Manager</strong> section of this dashboard.</span>
+          </li>
+          <li>
+            <span class="step-num">5</span>
+            <span>Download the updated <code style="color:#c0909a;">ads.txt</code> file from this dashboard and upload it to the root of your hosting (same folder as <code style="color:#c0909a;">index.html</code>).</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ─── ADSENSE PANEL ─── -->
+    <div class="panel" id="panel-adsense">
+      <div class="topbar">
+        <div>
+          <div class="topbar-title">AdSense & Ads</div>
+          <div class="topbar-sub">Paste your Google AdSense ad unit code to display ads on your stories.</div>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn-primary" onclick="saveAdsense()">💾 Save & Apply</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Google AdSense Ad Unit Code</div>
+            <div class="card-desc">Paste the full ad unit script code from your Google AdSense account. This will appear at the bottom of each story page automatically.</div>
+          </div>
+          <div class="card-badge" id="adsense-badge">
+            <span class="status-dot inactive"></span>Inactive
+          </div>
+        </div>
+
+        <div class="info-box">
+          <span class="info-box-icon">ℹ</span>
+          <span>In your AdSense account, go to <strong>Ads → By ad unit → Display ads</strong>, create a new unit, then copy the entire <code>&lt;script&gt;</code> block and paste it below. It looks like: <code>&lt;script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXX"&gt;&lt;/script&gt;</code></span>
+        </div>
+
+        <div class="form-group">
+          <div class="form-label">
+            Google AdSense Code
+            <span class="form-label-hint">— paste the full &lt;script&gt; block here</span>
+          </div>
+          <textarea class="form-textarea" id="adsense-code" rows="7"
+            placeholder="Paste your AdSense ad unit code here&#10;&#10;Example:&#10;&lt;script async src=&quot;https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX&quot; crossorigin=&quot;anonymous&quot;&gt;&lt;/script&gt;&#10;&lt;ins class=&quot;adsbygoogle&quot; ...&gt;&lt;/ins&gt;&#10;&lt;script&gt;(adsbygoogle = window.adsbygoogle || []).push({});&lt;/script&gt;"></textarea>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="form-group">
+          <div class="form-label">Ad Placement</div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-title">Show ad at bottom of each story page</div>
+              <div class="toggle-desc">Displays the ad unit after the story content on every page</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="toggle-story-ads" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-title">Show ad on Table of Contents page</div>
+              <div class="toggle-desc">Displays the ad unit on the intro/contents spread</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="toggle-toc-ads">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <button class="btn-primary" onclick="saveAdsense()">💾 Save & Apply</button>
+          <button class="btn-secondary" onclick="clearAdsense()">✕ Clear Code</button>
+        </div>
+      </div>
+
+      <!-- Current status -->
+      <div class="card">
+        <div class="card-title" style="margin-bottom:12px;">Current Ad Code Preview</div>
+        <div class="code-preview" id="adsense-preview">No ad code saved yet. Paste your AdSense code above and click Save & Apply.</div>
+      </div>
+    </div>
+
+    <!-- ─── ADS.TXT PANEL ─── -->
+    <div class="panel" id="panel-adstxt">
+      <div class="topbar">
+        <div>
+          <div class="topbar-title">ads.txt Manager</div>
+          <div class="topbar-sub">Required by Google AdSense to verify you own this site.</div>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn-primary" onclick="saveAdstxt()">💾 Save</button>
+          <button class="btn-secondary" onclick="downloadAdstxt()">⬇ Download ads.txt</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">ads.txt Content</div>
+            <div class="card-desc">Paste the ads.txt content provided by Google AdSense. This file must be placed at the root of your website (same folder as index.html).</div>
+          </div>
+          <div class="card-badge" id="adstxt-badge">
+            <span class="status-dot inactive"></span>Not set
+          </div>
+        </div>
+
+        <div class="info-box">
+          <span class="info-box-icon">ℹ</span>
+          <div>
+            <strong>Where to find your ads.txt line:</strong> In AdSense, go to <strong>Account → Account information → ads.txt</strong>. Copy the line that looks like:<br>
+            <code style="color:#c0909a; display:block; margin-top:6px;">google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0</code>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="form-label">
+            ads.txt Content
+            <span class="form-label-hint">— one entry per line</span>
+          </div>
+          <textarea class="form-textarea" id="adstxt-content" rows="8"
+            placeholder="Paste your ads.txt content here&#10;&#10;Example:&#10;google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0&#10;&#10;You can also add multiple lines if you use other ad networks."></textarea>
+        </div>
+
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <button class="btn-primary" onclick="saveAdstxt()">💾 Save</button>
+          <button class="btn-secondary" onclick="downloadAdstxt()">⬇ Download ads.txt File</button>
+          <button class="btn-secondary" onclick="clearAdstxt()">✕ Clear</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="margin-bottom:8px;">How to Upload ads.txt</div>
+        <ul class="step-list">
+          <li>
+            <span class="step-num">1</span>
+            <span>Paste your AdSense ads.txt line above and click <strong style="color:#c0909a;">Download ads.txt File</strong>.</span>
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <span>Upload the downloaded <code style="color:#c0909a;">ads.txt</code> file to the <strong>root folder</strong> of your website hosting — the same folder where your <code style="color:#c0909a;">index.html</code> lives.</span>
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <span>Verify it's working by visiting <code style="color:#c0909a;">yourdomain.com/ads.txt</code> in your browser. You should see the content you pasted.</span>
+          </li>
+          <li>
+            <span class="step-num">4</span>
+            <span>Google AdSense will automatically detect the file within 24–48 hours and verify your site ownership.</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ─── SETTINGS PANEL ─── -->
+    <div class="panel" id="panel-settings">
+      <div class="topbar">
+        <div>
+          <div class="topbar-title">Site Settings</div>
+          <div class="topbar-sub">Manage your site's basic information and appearance.</div>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn-primary" onclick="saveSettings()">💾 Save Settings</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="margin-bottom:20px;">General</div>
+        <div class="form-group">
+          <div class="form-label">Site Title</div>
+          <input class="form-input" type="text" id="setting-title" value="The Quiet Truths" />
+        </div>
+        <div class="form-group">
+          <div class="form-label">Tagline</div>
+          <input class="form-input" type="text" id="setting-tagline" value="Stories that reveal what people feel but don't say out loud" />
+        </div>
+        <div class="form-group">
+          <div class="form-label">Author Name</div>
+          <input class="form-input" type="text" id="setting-author" value="Cynthia Zamora" />
+        </div>
+        <div class="form-group">
+          <div class="form-label">Blogger URL (for "Read Full Story" links)</div>
+          <input class="form-input" type="text" id="setting-blog-url" value="https://oyuki79.blogspot.com" />
+        </div>
+        <div class="divider"></div>
+        <div class="form-group">
+          <div class="form-label">Change Admin Password</div>
+          <input class="form-input" type="password" id="setting-newpass" placeholder="Enter new password (leave blank to keep current)" />
+        </div>
+        <button class="btn-primary" onclick="saveSettings()">💾 Save Settings</button>
+      </div>
+    </div>
+
+    <!-- ─── STORIES PANEL ─── -->
+    <div class="panel" id="panel-stories">
+      <div class="topbar">
+        <div>
+          <div class="topbar-title">Stories</div>
+          <div class="topbar-sub">All 18 stories currently in your flip book.</div>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn-secondary" onclick="window.open('https://oyuki79.blogspot.com','_blank')">↗ Open Blogger</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-desc" style="margin-bottom:20px; font-size:13px;">Stories are automatically pulled from your Blogger feed. To add or edit stories, update your Blogger blog and the flip book will reflect the changes on next refresh.</div>
+        <div id="stories-list"></div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /dashboard -->
+
+<!-- Toast -->
+<div id="toast">
+  <span class="toast-icon" id="toast-icon">✓</span>
+  <span id="toast-msg">Saved successfully!</span>
+</div>
+
+<script>
+// ─── AUTH ────────────────────────────────────────────────────────────────────
+const DEFAULT_PASS = 'quiettruths2026';
+
+function doLogin() {
+  const pass = document.getElementById('admin-pass').value;
+  const stored = localStorage.getItem('qt_admin_pass') || DEFAULT_PASS;
+  if (pass === stored) {
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('dashboard').classList.add('visible');
+    loadAll();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+    document.getElementById('admin-pass').value = '';
+  }
+}
+
+function doLogout() {
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('dashboard').classList.remove('visible');
+  document.getElementById('admin-pass').value = '';
+  document.getElementById('login-error').style.display = 'none';
+}
+
+// ─── PANEL NAVIGATION ────────────────────────────────────────────────────────
+function showPanel(name, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+}
+
+// ─── ADSENSE ─────────────────────────────────────────────────────────────────
+function saveAdsense() {
+  const code = document.getElementById('adsense-code').value.trim();
+  const storyAds = document.getElementById('toggle-story-ads').checked;
+  const tocAds = document.getElementById('toggle-toc-ads').checked;
+
+  localStorage.setItem('qt_adsense_code', code);
+  localStorage.setItem('qt_adsense_story', storyAds);
+  localStorage.setItem('qt_adsense_toc', tocAds);
+
+  updateAdsenseUI(code);
+  showToast('success', 'AdSense code saved! Reload the main site to see ads.');
+}
+
+function clearAdsense() {
+  document.getElementById('adsense-code').value = '';
+  localStorage.removeItem('qt_adsense_code');
+  updateAdsenseUI('');
+  showToast('success', 'AdSense code cleared.');
+}
+
+function updateAdsenseUI(code) {
+  const badge = document.getElementById('adsense-badge');
+  const preview = document.getElementById('adsense-preview');
+  const overviewStatus = document.getElementById('overview-adsense-status');
+
+  if (code) {
+    badge.innerHTML = '<span class="status-dot active"></span>Active';
+    preview.textContent = code;
+    overviewStatus.innerHTML = '<span class="status-dot active"></span>Active';
+  } else {
+    badge.innerHTML = '<span class="status-dot inactive"></span>Inactive';
+    preview.textContent = 'No ad code saved yet. Paste your AdSense code above and click Save & Apply.';
+    overviewStatus.innerHTML = '<span class="status-dot inactive"></span>Not configured';
+  }
+}
+
+// ─── ADS.TXT ─────────────────────────────────────────────────────────────────
+function saveAdstxt() {
+  const content = document.getElementById('adstxt-content').value.trim();
+  localStorage.setItem('qt_adstxt', content);
+  updateAdstxtUI(content);
+  showToast('success', 'ads.txt content saved! Click Download to get the file.');
+}
+
+function clearAdstxt() {
+  document.getElementById('adstxt-content').value = '';
+  localStorage.removeItem('qt_adstxt');
+  updateAdstxtUI('');
+  showToast('success', 'ads.txt content cleared.');
+}
+
+function downloadAdstxt() {
+  const content = document.getElementById('adstxt-content').value.trim();
+  if (!content) {
+    showToast('error', 'Please paste your ads.txt content first.');
+    return;
+  }
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'ads.txt';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('success', 'ads.txt downloaded! Upload it to your website root folder.');
+}
+
+function updateAdstxtUI(content) {
+  const badge = document.getElementById('adstxt-badge');
+  const overviewStatus = document.getElementById('overview-adstxt-status');
+  if (content) {
+    badge.innerHTML = '<span class="status-dot active"></span>Configured';
+    overviewStatus.innerHTML = '<span class="status-dot active"></span>Configured';
+  } else {
+    badge.innerHTML = '<span class="status-dot inactive"></span>Not set';
+    overviewStatus.innerHTML = '<span class="status-dot inactive"></span>Not set';
+  }
+}
+
+// ─── SETTINGS ────────────────────────────────────────────────────────────────
+function saveSettings() {
+  const title = document.getElementById('setting-title').value.trim();
+  const tagline = document.getElementById('setting-tagline').value.trim();
+  const author = document.getElementById('setting-author').value.trim();
+  const blogUrl = document.getElementById('setting-blog-url').value.trim();
+  const newPass = document.getElementById('setting-newpass').value.trim();
+
+  localStorage.setItem('qt_site_title', title);
+  localStorage.setItem('qt_site_tagline', tagline);
+  localStorage.setItem('qt_site_author', author);
+  localStorage.setItem('qt_blog_url', blogUrl);
+
+  if (newPass) {
+    localStorage.setItem('qt_admin_pass', newPass);
+    document.getElementById('setting-newpass').value = '';
+    showToast('success', 'Settings & password saved!');
+  } else {
+    showToast('success', 'Settings saved! Reload the main site to see changes.');
+  }
+}
+
+// ─── STORIES LIST ────────────────────────────────────────────────────────────
+const storyTitles = [
+  "9 Signs You're Emotionally Unavailable (And What to Do About It)",
+  "The Mirror and the Magnet: Why Becoming Your Best Self Is the Greatest Love Story",
+  "He Was Right There. She Was Somewhere Else",
+  "She Had Everything. She Just Didn't Have Herself",
+  "She Didn't Fix Her Life… She Changed How She Ended Her Days",
+  "The One Thing She Changed… That Changed Everything",
+  "The Truth About Mixed Signals No One Tells You",
+  "She Was Loyal… Even When He Wasn't Worth It",
+  "He Only Wanted Her… When He Felt Her Pulling Away",
+  "The Moment She Stopped Explaining Herself",
+  "He Gave Her Just Enough… To Keep Her Confused",
+  "The Truth Most People Realize Too Late About Love",
+  "He Didn't Lose Her… He Stopped Choosing Her",
+  "The Question That Reveals Everything About a Person",
+  "He Was Everything She Wanted… Except Consistent",
+  "The Day He Realized He Was the Problem",
+  "She Ignored the Signs… Until It Was Too Late",
+  "He Said He Loved Her… But His Actions Told a Different Story"
+];
+
+const storyDates = [
+  "April 24, 2026","April 24, 2026","April 22, 2026","April 22, 2026",
+  "April 20, 2026","April 19, 2026","April 19, 2026","April 19, 2026",
+  "April 19, 2026","April 18, 2026","April 18, 2026","April 18, 2026",
+  "April 18, 2026","April 18, 2026","April 16, 2026","April 16, 2026",
+  "April 16, 2026","April 16, 2026"
+];
+
+function buildStoriesList() {
+  const list = document.getElementById('stories-list');
+  list.innerHTML = storyTitles.map((t, i) => `
+    <div style="display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid rgba(192,96,122,0.08);">
+      <span style="font-size:11px; color:#5a2535; min-width:28px; font-family:'Lora',serif;">${String(i+1).padStart(2,'0')}</span>
+      <span style="flex:1; font-size:13px; color:#c0909a; line-height:1.4;">${t}</span>
+      <span style="font-size:11px; color:#5a2535; white-space:nowrap;">${storyDates[i]}</span>
+      <span style="background:rgba(76,175,80,0.15); border:1px solid rgba(76,175,80,0.3); border-radius:20px; padding:2px 10px; font-size:10px; color:#4caf50; white-space:nowrap;">Published</span>
+    </div>
+  `).join('');
+}
+
+// ─── LOAD ALL ────────────────────────────────────────────────────────────────
+function loadAll() {
+  // AdSense
+  const code = localStorage.getItem('qt_adsense_code') || '';
+  document.getElementById('adsense-code').value = code;
+  document.getElementById('toggle-story-ads').checked = localStorage.getItem('qt_adsense_story') !== 'false';
+  document.getElementById('toggle-toc-ads').checked = localStorage.getItem('qt_adsense_toc') === 'true';
+  updateAdsenseUI(code);
+
+  // ads.txt
+  const adstxt = localStorage.getItem('qt_adstxt') || '';
+  document.getElementById('adstxt-content').value = adstxt;
+  updateAdstxtUI(adstxt);
+
+  // Settings
+  const title = localStorage.getItem('qt_site_title');
+  const tagline = localStorage.getItem('qt_site_tagline');
+  const author = localStorage.getItem('qt_site_author');
+  const blogUrl = localStorage.getItem('qt_blog_url');
+  if (title) document.getElementById('setting-title').value = title;
+  if (tagline) document.getElementById('setting-tagline').value = tagline;
+  if (author) document.getElementById('setting-author').value = author;
+  if (blogUrl) document.getElementById('setting-blog-url').value = blogUrl;
+
+  // Stories
+  buildStoriesList();
+}
+
+// ─── TOAST ───────────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(type, msg) {
+  const toast = document.getElementById('toast');
+  const icon = document.getElementById('toast-icon');
+  const msgEl = document.getElementById('toast-msg');
+  toast.className = type;
+  icon.textContent = type === 'success' ? '✓' : '✕';
+  msgEl.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 3500);
+}
+
+// ─── ENTER KEY ON LOGIN ───────────────────────────────────────────────────────
+document.getElementById('admin-pass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+</script>
+</body>
+</html>

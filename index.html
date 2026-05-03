@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Quiet Truths</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── RESET & BASE ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: #1a0a0f;
+      font-family: 'DM Sans', sans-serif;
+      color: #f5e6e8;
+      user-select: none;
+    }
+
+    /* ─── FLORAL BACKGROUND ─── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 20%, rgba(114,36,62,0.35) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 80%, rgba(80,20,40,0.4) 0%, transparent 60%),
+        radial-gradient(ellipse at 50% 50%, rgba(26,10,15,1) 0%, transparent 100%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* SVG floral overlay */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Cg opacity='0.07' fill='%23c0607a'%3E%3Ccircle cx='50' cy='50' r='30'/%3E%3Ccircle cx='50' cy='50' r='18' fill='none' stroke='%23c0607a' stroke-width='2'/%3E%3Cellipse cx='50' cy='25' rx='8' ry='18' fill='%23c0607a'/%3E%3Cellipse cx='50' cy='75' rx='8' ry='18' fill='%23c0607a'/%3E%3Cellipse cx='25' cy='50' rx='18' ry='8' fill='%23c0607a'/%3E%3Cellipse cx='75' cy='50' rx='18' ry='8' fill='%23c0607a'/%3E%3Cellipse cx='29' cy='29' rx='8' ry='18' transform='rotate(45 29 29)' fill='%23c0607a'/%3E%3Cellipse cx='71' cy='71' rx='8' ry='18' transform='rotate(45 71 71)' fill='%23c0607a'/%3E%3Cellipse cx='71' cy='29' rx='8' ry='18' transform='rotate(-45 71 29)' fill='%23c0607a'/%3E%3Cellipse cx='29' cy='71' rx='8' ry='18' transform='rotate(-45 29 71)' fill='%23c0607a'/%3E%3Ccircle cx='200' cy='200' r='40'/%3E%3Ccircle cx='200' cy='200' r='25' fill='none' stroke='%23c0607a' stroke-width='2'/%3E%3Cellipse cx='200' cy='168' rx='10' ry='24' fill='%23c0607a'/%3E%3Cellipse cx='200' cy='232' rx='10' ry='24' fill='%23c0607a'/%3E%3Cellipse cx='168' cy='200' rx='24' ry='10' fill='%23c0607a'/%3E%3Cellipse cx='232' cy='200' rx='24' ry='10' fill='%23c0607a'/%3E%3Ccircle cx='350' cy='80' r='25'/%3E%3Ccircle cx='80' cy='320' r='20'/%3E%3Ccircle cx='320' cy='350' r='35'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: 400px 400px;
+      opacity: 1;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ─── SCENE / PERSPECTIVE ─── */
+    #scene {
+      position: fixed; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      perspective: 2500px;
+      z-index: 1;
+    }
+
+    /* ─── BOOK WRAPPER ─── */
+    #book-wrapper {
+      position: relative;
+      width: 900px; height: 580px;
+      transform-style: preserve-3d;
+      transition: transform 0.6s ease;
+    }
+
+    /* ─── BOOK ─── */
+    #book {
+      position: relative;
+      width: 900px; height: 580px;
+      transform-style: preserve-3d;
+    }
+
+    /* ─── COVER ─── */
+    #cover {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, #3d0d1e 0%, #6b1a32 40%, #4a0f20 70%, #2a0810 100%);
+      border-radius: 4px 12px 12px 4px;
+      box-shadow:
+        -8px 0 20px rgba(0,0,0,0.6),
+        8px 0 30px rgba(0,0,0,0.4),
+        inset -4px 0 12px rgba(0,0,0,0.3);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      overflow: hidden;
+      transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1.000), box-shadow 0.3s ease;
+      transform-origin: left center;
+      transform-style: preserve-3d;
+      border-left: 6px solid #8b2040;
+    }
+
+    #cover.open {
+      transform: rotateY(-160deg);
+      box-shadow: -20px 0 40px rgba(0,0,0,0.8);
+    }
+
+    #cover::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='580' viewBox='0 0 500 580'%3E%3Cg opacity='0.15' fill='none' stroke='%23e8a0b0' stroke-width='1.5'%3E%3Ccircle cx='250' cy='290' r='120'/%3E%3Ccircle cx='250' cy='290' r='80'/%3E%3Cellipse cx='250' cy='175' rx='25' ry='60'/%3E%3Cellipse cx='250' cy='405' rx='25' ry='60'/%3E%3Cellipse cx='135' cy='290' rx='60' ry='25'/%3E%3Cellipse cx='365' cy='290' rx='60' ry='25'/%3E%3Cellipse cx='165' cy='205' rx='25' ry='60' transform='rotate(45 165 205)'/%3E%3Cellipse cx='335' cy='375' rx='25' ry='60' transform='rotate(45 335 375)'/%3E%3Cellipse cx='335' cy='205' rx='25' ry='60' transform='rotate(-45 335 205)'/%3E%3Cellipse cx='165' cy='375' rx='25' ry='60' transform='rotate(-45 165 375)'/%3E%3Ccircle cx='80' cy='80' r='50'/%3E%3Ccircle cx='420' cy='80' r='40'/%3E%3Ccircle cx='80' cy='500' r='40'/%3E%3Ccircle cx='420' cy='500' r='50'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: cover;
+      pointer-events: none;
+    }
+
+    #cover-content {
+      position: relative; z-index: 2;
+      text-align: center; padding: 40px;
+    }
+
+    #cover-title {
+      font-family: 'Lora', serif;
+      font-size: 42px; font-weight: 700;
+      color: #f5d0d8;
+      text-shadow: 0 2px 20px rgba(200,80,100,0.5);
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+      line-height: 1.2;
+    }
+
+    #cover-subtitle {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px; font-weight: 300;
+      color: #c9909a;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 40px;
+    }
+
+    #cover-divider {
+      width: 80px; height: 1px;
+      background: linear-gradient(90deg, transparent, #c0607a, transparent);
+      margin: 0 auto 40px;
+    }
+
+    #cover-open-btn {
+      display: inline-block;
+      padding: 12px 32px;
+      border: 1px solid rgba(192,96,122,0.6);
+      color: #f5d0d8;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: rgba(192,96,122,0.1);
+    }
+
+    #cover-open-btn:hover {
+      background: rgba(192,96,122,0.3);
+      border-color: #c0607a;
+      box-shadow: 0 0 20px rgba(192,96,122,0.3);
+    }
+
+    #cover-author {
+      position: absolute; bottom: 30px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px; letter-spacing: 3px;
+      color: #8a4050; text-transform: uppercase;
+    }
+
+    /* ─── BOOK SPINE ─── */
+    #spine {
+      position: absolute;
+      left: 0; top: 0;
+      width: 30px; height: 100%;
+      background: linear-gradient(90deg, #1a0508, #4a1020, #2a0810);
+      border-radius: 4px 0 0 4px;
+      box-shadow: inset -3px 0 8px rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 5;
+    }
+
+    #spine-text {
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      transform: rotate(180deg);
+      font-family: 'Lora', serif;
+      font-size: 11px; letter-spacing: 3px;
+      color: #6a3040; text-transform: uppercase;
+    }
+
+    /* ─── PAGES CONTAINER ─── */
+    #pages-container {
+      position: absolute;
+      left: 30px; top: 0;
+      width: calc(100% - 30px); height: 100%;
+      overflow: hidden;
+    }
+
+    /* ─── INDIVIDUAL PAGE ─── */
+    .page {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      background: #fdf6f0;
+      display: none;
+      overflow: hidden;
+    }
+
+    .page.active {
+      display: flex;
+    }
+
+    /* Two-column spread */
+    .page-left, .page-right {
+      flex: 1;
+      height: 100%;
+      overflow-y: auto;
+      padding: 40px 36px;
+      position: relative;
+    }
+
+    .page-left {
+      border-right: 1px solid #e8d5d0;
+      background: linear-gradient(to right, #fdf0f2, #fdf6f0);
+    }
+
+    .page-right {
+      background: linear-gradient(to left, #fdf0f2, #fdf6f0);
+    }
+
+    /* Scrollbar styling */
+    .page-left::-webkit-scrollbar,
+    .page-right::-webkit-scrollbar { width: 4px; }
+    .page-left::-webkit-scrollbar-track,
+    .page-right::-webkit-scrollbar-track { background: transparent; }
+    .page-left::-webkit-scrollbar-thumb,
+    .page-right::-webkit-scrollbar-thumb { background: #d4a0a8; border-radius: 2px; }
+
+    /* Page number */
+    .page-num {
+      position: absolute;
+      bottom: 16px;
+      font-family: 'Lora', serif;
+      font-size: 11px; color: #c0909a;
+      letter-spacing: 2px;
+    }
+
+    .page-left .page-num { left: 36px; }
+    .page-right .page-num { right: 36px; }
+
+    /* ─── TABLE OF CONTENTS PAGE ─── */
+    .toc-page {
+      background: linear-gradient(135deg, #fdf0f2, #fdf6f0) !important;
+    }
+
+    .toc-title {
+      font-family: 'Lora', serif;
+      font-size: 28px; font-weight: 700;
+      color: #72243e;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+
+    .toc-subtitle {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px; color: #a06070;
+      letter-spacing: 3px; text-transform: uppercase;
+      margin-bottom: 30px;
+    }
+
+    .toc-divider {
+      width: 50px; height: 1px;
+      background: linear-gradient(90deg, #c0607a, transparent);
+      margin-bottom: 30px;
+    }
+
+    .toc-entry {
+      display: flex; align-items: flex-start;
+      padding: 10px 0;
+      border-bottom: 1px dotted #e8d0d5;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      gap: 12px;
+    }
+
+    .toc-entry:hover { padding-left: 8px; }
+    .toc-entry:hover .toc-entry-title { color: #72243e; }
+
+    .toc-entry-num {
+      font-family: 'Lora', serif;
+      font-size: 11px; color: #c0909a;
+      min-width: 24px; padding-top: 2px;
+    }
+
+    .toc-entry-title {
+      font-family: 'Lora', serif;
+      font-size: 13px; color: #4a2030;
+      line-height: 1.4; flex: 1;
+      transition: color 0.2s;
+    }
+
+    .toc-entry-date {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px; color: #c0909a;
+      white-space: nowrap; padding-top: 3px;
+    }
+
+    /* ─── STORY PAGE ─── */
+    .story-category {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px; color: #c0607a;
+      letter-spacing: 3px; text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .story-title {
+      font-family: 'Lora', serif;
+      font-size: 22px; font-weight: 700;
+      color: #3a1020;
+      line-height: 1.3; margin-bottom: 10px;
+    }
+
+    .story-meta {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px; color: #a08090;
+      margin-bottom: 20px;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .story-meta::after {
+      content: '';
+      flex: 1; height: 1px;
+      background: linear-gradient(90deg, #e8d0d5, transparent);
+    }
+
+    .story-divider {
+      width: 40px; height: 2px;
+      background: linear-gradient(90deg, #c0607a, #e8a0b0);
+      margin-bottom: 20px;
+      border-radius: 1px;
+    }
+
+    .story-body {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px; line-height: 1.9;
+      color: #3a2028;
+    }
+
+    .story-body p { margin-bottom: 14px; }
+    .story-body h2 {
+      font-family: 'Lora', serif;
+      font-size: 16px; color: #72243e;
+      margin: 20px 0 10px;
+    }
+
+    .story-body blockquote {
+      border-left: 3px solid #c0607a;
+      padding: 8px 16px;
+      margin: 16px 0;
+      font-style: italic;
+      color: #6a3040;
+      background: rgba(192,96,122,0.05);
+    }
+
+    .story-drop-cap::first-letter {
+      font-family: 'Lora', serif;
+      font-size: 52px; font-weight: 700;
+      float: left; line-height: 0.8;
+      margin: 4px 8px 0 0;
+      color: #72243e;
+    }
+
+    .read-more-link {
+      display: inline-block;
+      margin-top: 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px; letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #c0607a;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(192,96,122,0.4);
+      padding-bottom: 2px;
+      transition: all 0.2s;
+    }
+
+    .read-more-link:hover {
+      color: #72243e;
+      border-color: #72243e;
+    }
+
+    /* About page */
+    .about-portrait {
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      border: 3px solid #c0607a;
+      object-fit: cover;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(192,96,122,0.3);
+    }
+
+    .about-name {
+      font-family: 'Lora', serif;
+      font-size: 24px; font-weight: 700;
+      color: #3a1020; margin-bottom: 6px;
+    }
+
+    .about-handle {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px; color: #c0607a;
+      letter-spacing: 3px; text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .about-bio {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px; line-height: 1.8;
+      color: #3a2028;
+    }
+
+    /* ─── PAGE FLIP ANIMATION ─── */
+    .page-flip-overlay {
+      position: absolute; inset: 0;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    /* ─── NAVIGATION CONTROLS ─── */
+    #nav {
+      position: fixed;
+      bottom: 30px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; align-items: center; gap: 20px;
+      z-index: 100;
+      background: rgba(26,10,15,0.8);
+      backdrop-filter: blur(10px);
+      padding: 12px 24px;
+      border-radius: 40px;
+      border: 1px solid rgba(192,96,122,0.2);
+      box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+    }
+
+    .nav-btn {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 1px solid rgba(192,96,122,0.4);
+      background: rgba(192,96,122,0.1);
+      color: #f5d0d8;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s ease;
+      font-size: 16px;
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      background: rgba(192,96,122,0.3);
+      border-color: #c0607a;
+      box-shadow: 0 0 15px rgba(192,96,122,0.3);
+    }
+
+    .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    #page-indicator {
+      font-family: 'Lora', serif;
+      font-size: 13px; color: #c0909a;
+      min-width: 80px; text-align: center;
+      letter-spacing: 1px;
+    }
+
+    /* ─── MENU BUTTON ─── */
+    #menu-btn {
+      position: fixed;
+      top: 24px; right: 24px;
+      z-index: 200;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: 1px solid rgba(192,96,122,0.4);
+      background: rgba(26,10,15,0.8);
+      backdrop-filter: blur(10px);
+      color: #f5d0d8;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+      font-size: 18px;
+    }
+
+    #menu-btn:hover {
+      background: rgba(192,96,122,0.2);
+      border-color: #c0607a;
+    }
+
+    /* ─── SIDE MENU ─── */
+    #side-menu {
+      position: fixed;
+      top: 0; right: -340px;
+      width: 320px; height: 100%;
+      background: linear-gradient(180deg, #1a0508 0%, #2a0810 100%);
+      border-left: 1px solid rgba(192,96,122,0.2);
+      z-index: 300;
+      transition: right 0.4s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+      padding: 80px 30px 30px;
+      overflow-y: auto;
+      box-shadow: -10px 0 40px rgba(0,0,0,0.5);
+    }
+
+    #side-menu.open { right: 0; }
+
+    #menu-close {
+      position: absolute;
+      top: 20px; right: 20px;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 1px solid rgba(192,96,122,0.3);
+      background: transparent;
+      color: #c0909a;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+
+    #menu-close:hover { color: #f5d0d8; border-color: #c0607a; }
+
+    .menu-title {
+      font-family: 'Lora', serif;
+      font-size: 20px; color: #f5d0d8;
+      margin-bottom: 6px;
+    }
+
+    .menu-subtitle {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px; color: #8a5060;
+      letter-spacing: 3px; text-transform: uppercase;
+      margin-bottom: 30px;
+    }
+
+    .menu-divider {
+      height: 1px;
+      background: linear-gradient(90deg, rgba(192,96,122,0.4), transparent);
+      margin-bottom: 24px;
+    }
+
+    .menu-item {
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(192,96,122,0.1);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .menu-item:hover { padding-left: 8px; }
+
+    .menu-item-num {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px; color: #6a3040;
+      letter-spacing: 2px; margin-bottom: 4px;
+    }
+
+    .menu-item-title {
+      font-family: 'Lora', serif;
+      font-size: 13px; color: #c0909a;
+      line-height: 1.4;
+      transition: color 0.2s;
+    }
+
+    .menu-item:hover .menu-item-title { color: #f5d0d8; }
+
+    /* ─── OVERLAY ─── */
+    #overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 250;
+      display: none;
+      backdrop-filter: blur(2px);
+    }
+
+    #overlay.show { display: block; }
+
+    /* ─── FLIP ANIMATION ─── */
+    @keyframes flipRight {
+      0%   { transform: rotateY(0deg); opacity: 1; }
+      50%  { transform: rotateY(-90deg) scaleX(0.8); opacity: 0.5; }
+      100% { transform: rotateY(0deg); opacity: 1; }
+    }
+
+    @keyframes flipLeft {
+      0%   { transform: rotateY(0deg); opacity: 1; }
+      50%  { transform: rotateY(90deg) scaleX(0.8); opacity: 0.5; }
+      100% { transform: rotateY(0deg); opacity: 1; }
+    }
+
+    .flipping-right { animation: flipRight 0.5s ease-in-out; }
+    .flipping-left  { animation: flipLeft  0.5s ease-in-out; }
+
+    /* ─── LOGO ─── */
+    #logo {
+      position: fixed;
+      top: 24px; left: 24px;
+      z-index: 200;
+      font-family: 'Lora', serif;
+      font-size: 16px; color: #c0909a;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    #logo:hover { color: #f5d0d8; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 960px) {
+      #book-wrapper, #book { width: 96vw; height: 70vw; max-height: 580px; }
+      #cover-title { font-size: 28px; }
+      .story-title { font-size: 17px; }
+      .page-left, .page-right { padding: 24px 18px; }
+    }
+
+    @media (max-width: 600px) {
+      #book-wrapper, #book { width: 96vw; height: auto; min-height: 420px; }
+      .page.active { flex-direction: column; }
+      .page-left { border-right: none; border-bottom: 1px solid #e8d5d0; max-height: 50%; }
+      .page-right { max-height: 50%; }
+      #nav { bottom: 16px; padding: 10px 16px; gap: 12px; }
+      .nav-btn { width: 34px; height: 34px; font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Logo -->
+<div id="logo" onclick="goToCover()">The Quiet Truths</div>
+
+<!-- Menu Button -->
+<button id="menu-btn" onclick="toggleMenu()" title="Table of Contents">☰</button>
+
+<!-- Overlay -->
+<div id="overlay" onclick="closeMenu()"></div>
+
+<!-- Side Menu -->
+<div id="side-menu">
+  <button id="menu-close" onclick="closeMenu()">✕</button>
+  <div class="menu-title">The Quiet Truths</div>
+  <div class="menu-subtitle">Table of Contents</div>
+  <div class="menu-divider"></div>
+  <div id="menu-list"></div>
+</div>
+
+<!-- Scene -->
+<div id="scene">
+  <div id="book-wrapper">
+    <div id="book">
+
+      <!-- Spine -->
+      <div id="spine">
+        <div id="spine-text">The Quiet Truths</div>
+      </div>
+
+      <!-- Cover -->
+      <div id="cover">
+        <div id="cover-content">
+          <div id="cover-title">The Quiet<br>Truths</div>
+          <div id="cover-subtitle">Stories that reveal what people feel<br>but don't say out loud</div>
+          <div id="cover-divider"></div>
+          <div id="cover-open-btn" onclick="openBook()">Open the Book</div>
+        </div>
+        <div id="cover-author">by Cynthia Zamora</div>
+      </div>
+
+      <!-- Pages Container -->
+      <div id="pages-container">
+        <!-- Pages injected by JS -->
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Navigation -->
+<div id="nav" style="display:none;">
+  <button class="nav-btn" id="btn-prev" onclick="prevPage()" title="Previous page">&#8592;</button>
+  <div id="page-indicator">1 / 1</div>
+  <button class="nav-btn" id="btn-next" onclick="nextPage()" title="Next page">&#8594;</button>
+</div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+const posts = [
+  {
+    title: "9 Signs You're Emotionally Unavailable (And What to Do About It)",
+    date: "April 24, 2026",
+    categories: ["Emotional Health", "Relationships", "Self Awareness"],
+    url: "https://oyuki79.blogspot.com/2026/04/9-signs-youre-emotionally-unavailable.html",
+    content: `<p class="story-drop-cap">Most people assume emotional unavailability is something <em>other</em> people struggle with. This post is for the ones brave enough to look in the mirror.</p>
+    <p>You've probably used the phrase before — maybe about an ex, a parent, a friend who could never quite show up when it mattered. <em>Emotionally unavailable.</em> It rolls off the tongue easily when we're on the outside looking in. But what happens when the person who's walled off is you?</p>
+    <p>Emotional unavailability isn't always dramatic. It doesn't always look like coldness or cruelty. Sometimes it looks like keeping things light, staying busy, deflecting with humor, or being perfectly kind — just never quite fully present.</p>
+    <h2>The 9 Signs</h2>
+    <p><strong>1. You keep relationships at surface level.</strong> You're fun, engaging, and easy to talk to — but conversations somehow never go deep. When things get personal, you change the subject, crack a joke, or find somewhere else to be.</p>
+    <p><strong>2. You panic when things get "too serious."</strong> The moment someone starts wanting more — more time, more commitment, more emotional depth — something inside you pulls back.</p>
+    <p><strong>3. You're always busy.</strong> Work, gym, plans, projects — your schedule is always full. Busyness is one of the most socially acceptable forms of emotional avoidance.</p>
+    <p><strong>4. You dismiss your own feelings.</strong> When something hurts, your first instinct is to rationalize it away. "I'm fine." "It's not a big deal." You've become so skilled at minimizing your emotions that you've lost touch with what you actually feel.</p>
+    <p><strong>5. You pull away when someone gets close.</strong> Just when a relationship starts to feel real and good — you find reasons to distance yourself.</p>`
+  },
+  {
+    title: "The Mirror and the Magnet: Why Becoming Your Best Self Is the Greatest Love Story",
+    date: "April 24, 2026",
+    categories: ["Personal Growth", "Relationships", "Self Improvement"],
+    url: "https://oyuki79.blogspot.com/2026/04/mirror-magnet-becoming-best-self-love-story.html",
+    content: `<p class="story-drop-cap">The people who show up most powerfully in relationships aren't the ones who searched hardest for the right person — they're the ones who worked hardest at becoming one.</p>
+    <p>Here's something nobody tells you when you're scrolling dating apps at midnight or wondering why the same arguments keep resurfacing: the most important relationship you will ever have is the one you have with yourself.</p>
+    <blockquote>"You don't attract what you want. You attract what you are."</blockquote>
+    <p>When you change, your relationships change. Not because you found a new partner, moved to a new city, or finally said the right thing — but because you became someone different. Someone who reacts differently. Attracts differently. Tolerates differently. Loves differently.</p>
+    <h2>The Mirror Problem</h2>
+    <p>Most of us enter relationships hoping they'll solve something. Loneliness. Boredom. A quiet hum of inadequacy we've never quite addressed. We look for someone to complete us — and then we're confused when they can't.</p>
+    <p>The mirror doesn't lie. Every relationship reflects something back to you. The question is whether you're willing to look.</p>`
+  },
+  {
+    title: "He Was Right There. She Was Somewhere Else",
+    date: "April 22, 2026",
+    categories: ["Emotional Stories", "Relationship Stories"],
+    url: "https://oyuki79.blogspot.com/2026/04/he-was-right-there-she-was-somewhere-else.html",
+    content: `<p class="story-drop-cap">She didn't lose him all at once. She lost him in small moments she didn't know mattered.</p>
+    <p>The last real conversation they had was on a Tuesday. She doesn't remember what it was about. That's the part that haunts her.</p>
+    <p>He was right there. Sitting across from her. And she was… somewhere else. Phone in hand. Half-listening. <em>"Mmhm. Yeah. That's crazy."</em></p>
+    <p>She thought there was more time. There's always more time — until there isn't.</p>
+    <p>He stopped sharing things slowly. Not all at once. Just… less each week. The stories got shorter. The pauses got longer. And one day she realized — he had stopped trying to reach her. Not because he stopped caring. Because she had trained him, without knowing it, that she wasn't really there.</p>
+    <p>She didn't need a better relationship. She needed to come back. So she made one rule: <em>Phone face down when he talks. Eyes up. Body still. Actually there.</em></p>
+    <p>It felt awkward at first. Like learning to sit with someone again. But slowly, the stories came back. The pauses filled. And she realized — presence isn't a gift you give someone. It's a choice you make, again and again.</p>`
+  },
+  {
+    title: "She Had Everything. She Just Didn't Have Herself",
+    date: "April 22, 2026",
+    categories: ["Personal Growth", "Self-Discovery", "Life Lessons"],
+    url: "https://oyuki79.blogspot.com/2026/04/she-had-everything-she-just-didnt-have-herself.html",
+    content: `<p class="story-drop-cap">She didn't have a motivation problem. She had a meaning problem.</p>
+    <p>Most mornings, she woke up tired before the day even started. Not physically tired. Soul tired. She'd scroll job listings at 1am. She'd cancel plans to "get things done." She'd push through, grind harder, sleep less. And still — nothing felt like enough.</p>
+    <p>She thought she needed better habits. A better routine. More discipline. She was wrong.</p>
+    <p>One afternoon, her old friend asked her a simple question: <em>"When was the last time you did something that felt like you?"</em></p>
+    <p>She laughed. Then she got quiet. Then she cried a little. Because she couldn't answer it.</p>
+    <p>Somewhere between becoming "responsible"… she had stopped doing the things that felt like her. The painting. The long walks with no destination. The conversations that lasted until midnight about nothing and everything. She had traded aliveness for achievement. And called it growing up.</p>
+    <p>So she made one small decision: once a week, she would do one thing purely because it felt like her. Not because it was productive. Not because it looked good. Just because it felt alive.</p>`
+  },
+  {
+    title: "She Didn't Fix Her Life… She Changed How She Ended Her Days",
+    date: "April 20, 2026",
+    categories: ["Mindfulness", "Self Improvement", "Wellness"],
+    url: "https://oyuki79.blogspot.com/2026/04/she-didnt-fix-her-life-changed-how-she-ended-her-days.html",
+    content: `<p class="story-drop-cap">Have you ever gone to bed thinking… "I'll do better tomorrow." But tomorrow keeps feeling the same?</p>
+    <p>She wasn't failing her life. She was just… ending her days wrong.</p>
+    <p>Every night looked like this: Phone in hand. Mind racing. A mix of guilt and plans she'd probably forget by morning. She wasn't lazy. She was overwhelmed. Because every day felt unfinished — not because she didn't do enough, but because nothing felt complete.</p>
+    <p>One night, she noticed something small. She had done a lot that day. Answered messages. Handled responsibilities. Helped people. But when she tried to remember it… her mind went blank. Instead, it replayed everything she didn't do.</p>
+    <blockquote>Her brain wasn't built to reward effort. It was built to track what was missing.</blockquote>
+    <p>So she tried something different. Not in the morning. Not during the day. At night. Before sleeping, she asked herself one question: <em>"What did I finish today?"</em></p>
+    <p>Not "What's left?" Not "What went wrong?" Just: what did I complete? The answer was always longer than she expected. And slowly, the nights got quieter.</p>`
+  },
+  {
+    title: "The One Thing She Changed… That Changed Everything",
+    date: "April 19, 2026",
+    categories: ["Self Worth", "Relationships", "Personal Growth"],
+    url: "https://oyuki79.blogspot.com/2026/04/the-one-thing-she-changed-that-changed-everything.html",
+    content: `<p class="story-drop-cap">Have you ever felt like you were doing everything right… and still getting nothing back?</p>
+    <p>She did. She showed up. She replied fast. She cared deeply. She gave people chances… again and again. And somehow she was always the one left disappointed.</p>
+    <p>One night, sitting alone, staring at her phone, she realized something painful: It wasn't that people didn't value her. It was that she was making herself too easy to overlook.</p>
+    <p>So she tried something small. Not dramatic. Not loud. Just one change. She stopped responding immediately. Not to play games — but to give herself space to think. When someone canceled last minute, she didn't rearrange her entire day anymore. When something felt off, she didn't ignore it. She paused. She asked herself: <em>"If I respected myself fully… what would I do right now?"</em></p>
+    <p>And then she did exactly that. At first, it felt uncomfortable. She worried people would leave. She worried she'd be misunderstood. But something unexpected happened — the wrong people drifted away. And the right ones leaned in.</p>`
+  },
+  {
+    title: "The Truth About Mixed Signals No One Tells You",
+    date: "April 19, 2026",
+    categories: ["Dating Psychology", "Relationships"],
+    url: "https://oyuki79.blogspot.com/2026/04/the-truth-about-mixed-signals.html",
+    content: `<p class="story-drop-cap">Mixed signals aren't confusing. They're a clear message: <em>"I'm interested… but not enough."</em></p>
+    <p>We spend so much time trying to decode the behavior of people who can't make up their minds about us. We analyze the texts. We replay the conversations. We ask our friends what they think it means.</p>
+    <p>But here's the quiet truth nobody says out loud: when someone truly wants to be with you, you don't need a decoder ring. Clarity comes naturally when someone is certain about you.</p>
+    <p>The mixed signals aren't a puzzle to solve. They're an answer you already have — you're just hoping it's wrong.</p>
+    <blockquote>The right person won't make you feel like a maybe.</blockquote>
+    <p>You deserve someone who is a clear, consistent yes. Not someone who keeps you guessing just enough to stay.</p>`
+  },
+  {
+    title: "She Was Loyal… Even When He Wasn't Worth It",
+    date: "April 19, 2026",
+    categories: ["Dating Psychology", "Relationship Stories"],
+    url: "https://oyuki79.blogspot.com/2026/04/she-was-loyal-even-when-he-wasnt-worth.html",
+    content: `<p class="story-drop-cap">She stayed loyal. Not because he deserved it… but because she was that kind of person.</p>
+    <p>And that's the hardest lesson: being a good person doesn't mean you should tolerate bad treatment.</p>
+    <p>She made excuses for him. She covered for him. She showed up even when he didn't. She told herself that love meant staying through the hard parts. But there's a difference between staying through hard times and staying through someone who consistently chooses not to show up for you.</p>
+    <p>Loyalty is a beautiful quality. But it becomes a cage when it's given to someone who doesn't value it.</p>
+    <p>The day she stopped explaining his behavior to others was the day she finally admitted it to herself: she wasn't being loyal to him. She was being loyal to the version of him she'd hoped he'd become.</p>
+    <p>And that version didn't exist.</p>`
+  },
+  {
+    title: "He Only Wanted Her… When He Felt Her Pulling Away",
+    date: "April 19, 2026",
+    categories: ["Dating Psychology", "Emotional Stories", "Relationship Stories"],
+    url: "https://oyuki79.blogspot.com/2026/04/he-only-wanted-her-when-he-felt-her.html",
+    content: `<p class="story-drop-cap">When she was available, he was distant. When she pulled back, suddenly he cared.</p>
+    <p>Not because he loved her deeply… but because he felt like he was losing control.</p>
+    <p>She used to think his sudden attention meant something. That maybe she'd finally reached him. That the distance was just fear, and her pulling away had cracked it open.</p>
+    <p>But she learned the difference — slowly, painfully — between someone who wants you and someone who just doesn't want to lose you.</p>
+    <blockquote>One is love. The other is possession dressed up as love.</blockquote>
+    <p>The moment she stopped pulling away to get his attention — the moment she simply left — was the moment she understood. He didn't chase her because he loved her. He chased her because she finally stopped being available. And that's not the same thing at all.</p>`
+  },
+  {
+    title: "The Moment She Stopped Explaining Herself",
+    date: "April 18, 2026",
+    categories: ["Emotional Stories", "Personal Growth"],
+    url: "https://oyuki79.blogspot.com/2026/04/the-moment-she-stopped-explaining.html",
+    content: `<p class="story-drop-cap">She used to explain everything. Why she felt hurt. Why she needed clarity. Why she deserved better.</p>
+    <p>Until one day… she realized the right person wouldn't need an explanation.</p>
+    <p>So she stopped talking. And started watching.</p>
+    <p>She watched who showed up without being asked. Who remembered without being reminded. Who chose her — quietly, consistently — without needing a reason.</p>
+    <p>There's a kind of peace that comes when you stop trying to convince people to treat you well. When you accept that your worth isn't something you need to argue for.</p>
+    <blockquote>The right people don't need convincing. The wrong ones can't be convinced no matter what you say.</blockquote>
+    <p>She stopped explaining herself. And in the silence, she found out exactly who was really there.</p>`
+  },
+  {
+    title: "He Gave Her Just Enough… To Keep Her Confused",
+    date: "April 18, 2026",
+    categories: ["Dating Psychology", "Emotional Stories", "Relationship Stories"],
+    url: "https://oyuki79.blogspot.com/2026/04/he-gave-her-just-enough-to-keep-her.html",
+    content: `<p class="story-drop-cap">He wasn't fully there. But he wasn't gone either.</p>
+    <p>Just enough attention to keep her hoping. Just enough distance to keep her doubting.</p>
+    <p>And that's what hurt the most. Not losing him — but never really having him.</p>
+    <p>She spent months trying to figure out what she was doing wrong. What she could say differently. How she could be more of what he seemed to want — and less of what seemed to push him away.</p>
+    <p>But the truth was simpler and harder than any of that: he liked the dynamic. The uncertainty kept her focused on him. The crumbs kept her grateful. And as long as she was confused, she wasn't leaving.</p>
+    <p>The day she stopped trying to decode his behavior was the day she finally saw it clearly. He wasn't confused. He was comfortable. And she deserved someone who was certain.</p>`
+  },
+  {
+    title: "The Truth Most People Realize Too Late About Love",
+    date: "April 18, 2026",
+    categories: ["Emotional Stories", "Life Lessons", "Relationship Stories"],
+    url: "https://oyuki79.blogspot.com/2026/04/the-truth-most-people-realize-too-late.html",
+    content: `<p class="story-drop-cap">Love isn't confusing. People are.</p>
+    <p>When someone truly wants you… clarity replaces confusion.</p>
+    <p>We've been taught to romanticize the chase. The push and pull. The "almost" that keeps us up at night. We mistake intensity for depth, and confusion for passion.</p>
+    <p>But real love — the kind that lasts — doesn't feel like a riddle. It feels like relief. Like you can finally exhale. Like you don't have to perform or strategize or wonder.</p>
+    <blockquote>The most loving thing someone can do is make you feel safe enough to be yourself.</blockquote>
+    <p>Most people realize this too late. After years of chasing people who kept them guessing. After exhausting themselves trying to earn something that should have been freely given.</p>
+    <p>You don't have to earn love. You have to recognize it — and have the courage to accept nothing less.</p>`
+  },
+  {
+    title: "He Didn't Lose Her… He Stopped Choosing Her",
+    date: "April 18, 2026",
+    categories: ["Emotional Intelligence", "Relationship Stories"],
+    url: "https://oyuki79.blogspot.com/2026/04/he-didnt-lose-her-he-stopped-choosing.html",
+    content: `<p class="story-drop-cap">People don't just "lose" someone. They stop choosing them.</p>
+    <p>In small ways. Quiet ways. Repeated ways. Until one day… there's nothing left to hold onto.</p>
+    <p>He didn't wake up one morning and decide to let her go. It happened in the moments he chose his phone over her words. In the plans he canceled without apology. In the times she reached for him and he was already somewhere else in his mind.</p>
+    <p>Love isn't just a feeling. It's a series of choices made every single day. And when you stop making those choices — when you stop reaching back — you're not losing someone.</p>
+    <blockquote>You're releasing them. Slowly. Without saying a word.</blockquote>
+    <p>She didn't leave because she stopped loving him. She left because she got tired of being the only one choosing.</p>`
+  },
+  {
+    title: "The Question That Reveals Everything About a Person",
+    date: "April 18, 2026",
+    categories: ["Dating Psychology", "Life Lessons", "Self Worth"],
+    url: "https://oyuki79.blogspot.com/2026/04/the-question-that-reveals-everything.html",
+    content: `<p class="story-drop-cap">Ask them this: <em>"How do you act when you're hurt?"</em></p>
+    <p>Because people don't reveal who they are when things are easy. They reveal it when they're triggered.</p>
+    <p>Do they go quiet and withdraw? Do they lash out and blame? Do they communicate, even imperfectly, and try to work through it?</p>
+    <p>The answer tells you everything about what a relationship with them will actually feel like — not in the honeymoon phase, but in the moments that matter.</p>
+    <p>Anyone can be charming when things are good. The real character shows up in conflict. In disappointment. In the moments when it would be easier to hurt you than to be honest.</p>
+    <blockquote>Watch how someone handles their own pain. That's who they'll be when they cause yours.</blockquote>
+    <p>It's not a test. It's just paying attention to what's already there.</p>`
+  },
+  {
+    title: "He Was Everything She Wanted… Except Consistent",
+    date: "April 16, 2026",
+    categories: ["Dating Psychology", "Emotional Stories", "Life Lessons"],
+    url: "https://oyuki79.blogspot.com/2026/04/he-was-perfect-but-inconsistent-relationship-story.html",
+    content: `<p class="story-drop-cap">He was charming. Attentive. Funny. When he was there.</p>
+    <p>That was the problem.</p>
+    <p>You can't build something real… with someone who only shows up part-time.</p>
+    <p>She used to tell herself that the good moments were worth the uncertainty. That nobody was perfect. That she should be grateful for what she had instead of wanting more.</p>
+    <p>But consistency isn't "more." It's the minimum. It's the foundation without which nothing else can stand.</p>
+    <p>A person can be wonderful in every way — kind, funny, smart, beautiful — and still be wrong for you if they can't show up reliably. Because love isn't just about the peaks. It's about the ordinary days. The Tuesday evenings. The quiet moments when nothing special is happening but you're both just… there.</p>
+    <blockquote>Consistency is how someone shows you they've chosen you — not just when it's convenient.</blockquote>`
+  },
+  {
+    title: "The Day He Realized He Was the Problem",
+    date: "April 16, 2026",
+    categories: ["Emotional Stories", "Life Lessons", "Personal Growth"],
+    url: "https://oyuki79.blogspot.com/2026/04/man-realizes-he-is-the-problem-life-story.html",
+    content: `<p class="story-drop-cap">He always blamed everyone else. His ex. His friends. "Bad timing."</p>
+    <p>Until one day… no one was left to blame.</p>
+    <p>That's when it hit him. The patterns weren't happening to him. He was creating them.</p>
+    <p>It's a terrifying moment — the one where you stop being the victim of your story and start seeing yourself as its author. Because it means you can no longer outsource the responsibility. Every relationship that ended badly. Every friendship that faded. Every opportunity that slipped away.</p>
+    <p>He had a role in all of it.</p>
+    <p>But here's what nobody tells you about that moment: it's also the most freeing thing that will ever happen to you. Because if you created the patterns, you can change them. The same power that built the walls can take them down.</p>
+    <blockquote>Accountability isn't punishment. It's the beginning of everything different.</blockquote>`
+  },
+  {
+    title: "She Ignored the Signs… Until It Was Too Late",
+    date: "April 16, 2026",
+    categories: ["Emotional Stories", "Life Lessons", "Self Worth"],
+    url: "https://oyuki79.blogspot.com/2026/04/she-ignored-the-signs-relationship-life-lesson.html",
+    content: `<p class="story-drop-cap">Have you ever seen the truth… but chose to ignore it?</p>
+    <p>She did. The late replies. The empty promises. The way he only showed up when it was easy. She noticed everything. But she told herself: <em>"Maybe I'm overthinking it."</em></p>
+    <p>That's the cruelest thing about red flags — they rarely arrive as emergencies. They come quietly. Wrapped in enough good moments to make you question your own instincts.</p>
+    <p>She didn't miss the signs. She saw them clearly. She just loved him more than she trusted herself.</p>
+    <p>And that's the lesson she carries now: your gut isn't being dramatic. It's being honest. The question is whether you're ready to listen.</p>
+    <blockquote>Intuition doesn't make things up. It notices things your heart isn't ready to accept yet.</blockquote>
+    <p>She wishes she had listened sooner. But she's grateful she finally listened at all.</p>`
+  },
+  {
+    title: "He Said He Loved Her… But His Actions Told a Different Story",
+    date: "April 16, 2026",
+    categories: ["Dating Psychology", "Emotional Stories", "Life Lessons", "Self Worth"],
+    url: "https://oyuki79.blogspot.com/2026/04/he-said-he-loved-her-actions-told-different-story.html",
+    content: `<p class="story-drop-cap">Have you ever believed someone… even when something inside you felt off?</p>
+    <p>She did. He said all the right things. <em>"I love you." "I see a future with you." "I'm not like the others."</em> And for a while… she believed him.</p>
+    <p>But words are easy. Words cost nothing. Words can be given freely by someone who has no intention of backing them up.</p>
+    <p>What she eventually learned to watch instead: Does he show up when it's inconvenient? Does he remember what matters to you? Does he protect your feelings even when you're not in the room?</p>
+    <p>Because love isn't a declaration. It's a pattern of behavior, repeated over time, that says: <em>you matter to me, and I'll keep showing you that.</em></p>
+    <blockquote>Anyone can say "I love you." Watch what they do on a random Wednesday when nothing special is happening.</blockquote>
+    <p>She stopped listening to what he said. She started watching what he did. And the answer became impossible to ignore.</p>`
+  }
+];
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let currentPage = 0; // 0 = cover, 1+ = book pages
+let totalPages = 0;
+let isAnimating = false;
+let bookOpen = false;
+
+// ─── BUILD PAGES ─────────────────────────────────────────────────────────────
+function buildPages() {
+  const container = document.getElementById('pages-container');
+  container.innerHTML = '';
+
+  // Page 1: About / TOC Left + TOC Right
+  // We'll do: spread 1 = About (left) + TOC part 1 (right)
+  //           spread 2 = TOC part 2 (left) + first story (right)
+  // Actually let's do: spread 1 = TOC (full spread), then each story = 1 spread
+
+  // Spread 0: TOC
+  const tocSpread = createSpread(0);
+  // Left: About
+  tocSpread.left.innerHTML = `
+    <div style="text-align:center; padding-top:20px;">
+      <img class="about-portrait" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiTn5qSsePyJVhXOxYtlpdm5CZ8BB_eUm-sZ7EEf6BvaytwEIyAH0QYT1nul8I-r06Dgc3pHN_oBj5S6COGSUgoQw2GyfvNT61w9YWLhcGFzWVvZvO3bGKx2o0imUoSNoSe76qnC_pipLoAsdZwKzj4KNu-2uk6Qb2OKAk66YMZV3WuJ1A/s1600/generate-image-of-the-woman-looking-out-at-the-shi%20(2).jpeg" alt="Author" onerror="this.style.display='none'"/>
+      <div class="about-name">Cynthia Zamora</div>
+      <div class="about-handle">@oyukii79</div>
+      <div class="story-divider" style="margin:0 auto 20px;"></div>
+      <div class="about-bio">Short stories that reveal the truths people feel… but don't say out loud.<br><br>Emotional storytelling about love, self-worth, and life lessons. Real moments. Real truths. Stories that stay with you.</div>
+    </div>
+    <span class="page-num">i</span>
+  `;
+  // Right: TOC
+  let tocHTML = `
+    <div class="toc-title">Contents</div>
+    <div class="toc-subtitle">All Stories</div>
+    <div class="toc-divider"></div>
+  `;
+  posts.forEach((p, i) => {
+    tocHTML += `
+      <div class="toc-entry" onclick="goToStory(${i})">
+        <span class="toc-entry-num">${String(i+1).padStart(2,'0')}</span>
+        <span class="toc-entry-title">${p.title}</span>
+        <span class="toc-entry-date">${p.date.split(',')[0]}</span>
+      </div>
+    `;
+  });
+  tocSpread.right.innerHTML = tocHTML + `<span class="page-num" style="right:36px;">ii</span>`;
+  container.appendChild(tocSpread.el);
+
+  // Story spreads
+  posts.forEach((post, i) => {
+    const spread = createSpread(i + 1);
+    const leftPageNum = (i + 1) * 2 + 1;
+    const rightPageNum = (i + 1) * 2 + 2;
+
+    // Left page: title + beginning
+    spread.left.innerHTML = `
+      <div class="story-category">${post.categories.slice(0,2).join(' · ')}</div>
+      <div class="story-title">${post.title}</div>
+      <div class="story-meta">
+        <span>${post.date}</span>
+        <span>·</span>
+        <span>by Cynthia Zamora</span>
+      </div>
+      <div class="story-divider"></div>
+      <div class="story-body">${post.content}</div>
+      <span class="page-num">${leftPageNum}</span>
+    `;
+
+    // Right page: continuation + read more
+    spread.right.innerHTML = `
+      <div class="story-body" style="padding-top:10px;">
+        <p>Every story in these pages is a quiet truth — the kind that lives in the spaces between what we say and what we mean. The kind that surfaces at 2am when the world is still and you're finally honest with yourself.</p>
+        <p>These are the moments that shape us. The realizations that arrive too late, or just in time. The small shifts that change everything.</p>
+        <p style="font-style:italic; color:#8a5060;">If this story touched something in you, you're not alone. These truths belong to all of us.</p>
+        <a href="${post.url}" target="_blank" class="read-more-link">Read full story on the blog →</a>
+      </div>
+      <span class="page-num" style="right:36px;">${rightPageNum}</span>
+    `;
+
+    container.appendChild(spread.el);
+  });
+
+  totalPages = posts.length + 1; // +1 for TOC spread
+  updateNav();
+  buildMenu();
+}
+
+function createSpread(index) {
+  const el = document.createElement('div');
+  el.className = 'page';
+  el.dataset.index = index;
+
+  const left = document.createElement('div');
+  left.className = 'page-left';
+
+  const right = document.createElement('div');
+  right.className = 'page-right';
+
+  el.appendChild(left);
+  el.appendChild(right);
+
+  return { el, left, right };
+}
+
+// ─── MENU ────────────────────────────────────────────────────────────────────
+function buildMenu() {
+  const list = document.getElementById('menu-list');
+  list.innerHTML = `
+    <div class="menu-item" onclick="goToPage(0); closeMenu();">
+      <div class="menu-item-num">INTRO</div>
+      <div class="menu-item-title">About & Table of Contents</div>
+    </div>
+  `;
+  posts.forEach((p, i) => {
+    list.innerHTML += `
+      <div class="menu-item" onclick="goToStory(${i}); closeMenu();">
+        <div class="menu-item-num">${String(i+1).padStart(2,'0')}</div>
+        <div class="menu-item-title">${p.title}</div>
+      </div>
+    `;
+  });
+}
+
+// ─── NAVIGATION ──────────────────────────────────────────────────────────────
+function showPage(index) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.querySelector(`.page[data-index="${index}"]`);
+  if (target) target.classList.add('active');
+  currentPage = index;
+  updateNav();
+}
+
+function updateNav() {
+  const indicator = document.getElementById('page-indicator');
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
+
+  if (!bookOpen) return;
+
+  const display = currentPage === 0 ? 'Intro' : `${currentPage} / ${totalPages - 1}`;
+  indicator.textContent = display;
+  btnPrev.disabled = currentPage <= 0;
+  btnNext.disabled = currentPage >= totalPages - 1;
+}
+
+function nextPage() {
+  if (isAnimating || currentPage >= totalPages - 1) return;
+  isAnimating = true;
+  const container = document.getElementById('pages-container');
+  container.classList.add('flipping-right');
+  setTimeout(() => {
+    container.classList.remove('flipping-right');
+    showPage(currentPage + 1);
+    isAnimating = false;
+  }, 500);
+}
+
+function prevPage() {
+  if (isAnimating || currentPage <= 0) return;
+  isAnimating = true;
+  const container = document.getElementById('pages-container');
+  container.classList.add('flipping-left');
+  setTimeout(() => {
+    container.classList.remove('flipping-left');
+    showPage(currentPage - 1);
+    isAnimating = false;
+  }, 500);
+}
+
+function goToPage(index) {
+  if (!bookOpen) openBook();
+  setTimeout(() => showPage(index), bookOpen ? 0 : 1300);
+}
+
+function goToStory(storyIndex) {
+  goToPage(storyIndex + 1);
+}
+
+function goToCover() {
+  if (bookOpen) closeBook();
+}
+
+// ─── BOOK OPEN / CLOSE ───────────────────────────────────────────────────────
+function openBook() {
+  if (bookOpen) return;
+  bookOpen = true;
+  document.getElementById('cover').classList.add('open');
+  setTimeout(() => {
+    showPage(0);
+    document.getElementById('nav').style.display = 'flex';
+  }, 800);
+}
+
+function closeBook() {
+  bookOpen = false;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('cover').classList.remove('open');
+  document.getElementById('nav').style.display = 'none';
+  currentPage = 0;
+}
+
+// ─── MENU TOGGLE ─────────────────────────────────────────────────────────────
+function toggleMenu() {
+  document.getElementById('side-menu').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+
+function closeMenu() {
+  document.getElementById('side-menu').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+// ─── KEYBOARD NAVIGATION ─────────────────────────────────────────────────────
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextPage();
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   prevPage();
+  if (e.key === 'Escape') { closeMenu(); }
+});
+
+// ─── TOUCH SWIPE ─────────────────────────────────────────────────────────────
+let touchStartX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', e => {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 50) {
+    if (diff > 0) nextPage();
+    else prevPage();
+  }
+});
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+buildPages();
+injectAdsense();
+
+// ─── ADSENSE INJECTION ────────────────────────────────────────────────────────
+function injectAdsense() {
+  const code = localStorage.getItem('qt_adsense_code');
+  const storyAds = localStorage.getItem('qt_adsense_story') !== 'false';
+  const tocAds = localStorage.getItem('qt_adsense_toc') === 'true';
+  if (!code) return;
+
+  document.querySelectorAll('.page').forEach((page, idx) => {
+    const isFirst = idx === 0;
+    if (isFirst && !tocAds) return;
+    if (!isFirst && !storyAds) return;
+
+    const right = page.querySelector('.page-right');
+    if (!right) return;
+
+    const adWrap = document.createElement('div');
+    adWrap.style.cssText = 'margin-top:20px; padding-top:16px; border-top:1px solid #e8d5d0; text-align:center;';
+    adWrap.innerHTML = '<div style="font-size:9px;color:#c0a0a8;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">Advertisement</div>' + code;
+    right.appendChild(adWrap);
+  });
+}
+</script>
+<!-- Admin link (hidden, accessible via /admin.html) -->
+</body>
+</html>
