@@ -909,19 +909,17 @@ let bookOpen = false;
 function buildPages() {
   const container = document.getElementById('pages-container');
   container.innerHTML = '';
-
-  // Page 1: About / TOC Left + TOC Right
-  // We'll do: spread 1 = About (left) + TOC part 1 (right)
-  //           spread 2 = TOC part 2 (left) + first story (right)
-  // Actually let's do: spread 1 = TOC (full spread), then each story = 1 spread
+  const allPosts = getMergedPosts();
 
   // Spread 0: TOC
   const tocSpread = createSpread(0);
+  const authorName = localStorage.getItem('qt_site_author') || 'Cynthia Zamora';
+  const blogUrl = localStorage.getItem('qt_blog_url') || 'https://oyuki79.blogspot.com';
   // Left: About
   tocSpread.left.innerHTML = `
     <div style="text-align:center; padding-top:20px;">
       <img class="about-portrait" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiTn5qSsePyJVhXOxYtlpdm5CZ8BB_eUm-sZ7EEf6BvaytwEIyAH0QYT1nul8I-r06Dgc3pHN_oBj5S6COGSUgoQw2GyfvNT61w9YWLhcGFzWVvZvO3bGKx2o0imUoSNoSe76qnC_pipLoAsdZwKzj4KNu-2uk6Qb2OKAk66YMZV3WuJ1A/s1600/generate-image-of-the-woman-looking-out-at-the-shi%20(2).jpeg" alt="Author" onerror="this.style.display='none'"/>
-      <div class="about-name">Cynthia Zamora</div>
+      <div class="about-name">${authorName}</div>
       <div class="about-handle">@oyukii79</div>
       <div class="story-divider" style="margin:0 auto 20px;"></div>
       <div class="about-bio">Short stories that reveal the truths people feel… but don't say out loud.<br><br>Emotional storytelling about love, self-worth, and life lessons. Real moments. Real truths. Stories that stay with you.</div>
@@ -934,7 +932,7 @@ function buildPages() {
     <div class="toc-subtitle">All Stories</div>
     <div class="toc-divider"></div>
   `;
-  posts.forEach((p, i) => {
+  allPosts.forEach((p, i) => {
     tocHTML += `
       <div class="toc-entry" onclick="goToStory(${i})">
         <span class="toc-entry-num">${String(i+1).padStart(2,'0')}</span>
@@ -947,7 +945,7 @@ function buildPages() {
   container.appendChild(tocSpread.el);
 
   // Story spreads
-  posts.forEach((post, i) => {
+  allPosts.forEach((post, i) => {
     const spread = createSpread(i + 1);
     const leftPageNum = (i + 1) * 2 + 1;
     const rightPageNum = (i + 1) * 2 + 2;
@@ -959,7 +957,7 @@ function buildPages() {
       <div class="story-meta">
         <span>${post.date}</span>
         <span>·</span>
-        <span>by Cynthia Zamora</span>
+        <span>by ${localStorage.getItem('qt_site_author') || 'Cynthia Zamora'}</span>
       </div>
       <div class="story-divider"></div>
       <div class="story-body">${post.content}</div>
@@ -980,7 +978,7 @@ function buildPages() {
     container.appendChild(spread.el);
   });
 
-  totalPages = posts.length + 1; // +1 for TOC spread
+  totalPages = allPosts.length + 1; // +1 for TOC spread
   updateNav();
   buildMenu();
 }
@@ -1129,8 +1127,125 @@ document.addEventListener('touchend', e => {
 });
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
+applyThemeFromStorage();
+applyLinksFromStorage();
 buildPages();
 injectAdsense();
+
+// ─── THEME APPLICATION ───────────────────────────────────────────────────────
+function applyThemeFromStorage() {
+  const themeId = localStorage.getItem('qt_theme');
+  if (!themeId || themeId === 'dark-rose') return; // default, no change needed
+
+  const themes = {
+    'midnight-garden': { bg: '#050a1a', accent: '#4080c0', text: '#d0e8f5', paper: '#f0f5fa', ink: '#0a1a2e', spine: '#0a1a2e', cover1: '#0a1530', cover2: '#1a3060' },
+    'ivory-lace':      { bg: '#faf8f5', accent: '#8b6040', text: '#4a3828', paper: '#f5f0e8', ink: '#3a2818', spine: '#6a4828', cover1: '#8b6040', cover2: '#c0a070' },
+    'emerald-forest':  { bg: '#050f08', accent: '#40a060', text: '#c0e8c8', paper: '#f0faf2', ink: '#0a1e10', spine: '#0a1e10', cover1: '#0a2010', cover2: '#1a4020' },
+    'golden-hour':     { bg: '#1a1005', accent: '#c09030', text: '#f5e0a0', paper: '#faf5e0', ink: '#2e1e08', spine: '#2e1e08', cover1: '#3a2010', cover2: '#6a4010' },
+    'lavender-dusk':   { bg: '#0e0818', accent: '#8060c0', text: '#e0d0f5', paper: '#f5f0ff', ink: '#1a1030', spine: '#1a1030', cover1: '#180828', cover2: '#301860' },
+    'crimson-ink':     { bg: '#0f0000', accent: '#c03040', text: '#f5c0c0', paper: '#fff0f0', ink: '#200808', spine: '#200808', cover1: '#200000', cover2: '#500010' },
+    'ocean-deep':      { bg: '#020810', accent: '#2080c0', text: '#a0d0f0', paper: '#f0f8ff', ink: '#041020', spine: '#041020', cover1: '#041020', cover2: '#082040' }
+  };
+
+  const t = themes[themeId];
+  if (!t) return;
+
+  // Apply CSS variables via inline style overrides
+  document.documentElement.style.setProperty('--theme-bg', t.bg);
+  document.body.style.background = t.bg;
+
+  // Update cover
+  const cover = document.getElementById('cover');
+  if (cover) cover.style.background = `linear-gradient(135deg, ${t.cover1} 0%, ${t.cover2} 40%, ${t.cover1} 70%, ${t.ink} 100%)`;
+
+  // Update spine
+  const spine = document.getElementById('spine');
+  if (spine) spine.style.background = `linear-gradient(180deg, ${t.spine} 0%, ${t.ink} 100%)`;
+
+  // Update page backgrounds
+  document.querySelectorAll('.page-left, .page-right').forEach(p => {
+    p.style.background = t.paper;
+    p.style.color = t.ink;
+  });
+
+  // Update body background
+  document.querySelector('body').style.background = t.bg;
+}
+
+// ─── LINKS APPLICATION ────────────────────────────────────────────────────────
+function applyLinksFromStorage() {
+  const siteTitle = localStorage.getItem('qt_site_title');
+  const tagline = localStorage.getItem('qt_site_tagline');
+  const author = localStorage.getItem('qt_site_author');
+  const youtube = localStorage.getItem('qt_youtube');
+  const youtubeName = localStorage.getItem('qt_youtube_name');
+  const email = localStorage.getItem('qt_email');
+  const instagram = localStorage.getItem('qt_instagram');
+  const tiktok = localStorage.getItem('qt_tiktok');
+
+  // Update title
+  if (siteTitle) {
+    const titleEl = document.getElementById('cover-title');
+    if (titleEl) titleEl.innerHTML = siteTitle.replace(' ', '<br>');
+    document.title = siteTitle;
+    const logo = document.getElementById('logo');
+    if (logo) logo.textContent = siteTitle;
+    const menuTitle = document.querySelector('.menu-title');
+    if (menuTitle) menuTitle.textContent = siteTitle;
+    const menuSub = document.querySelector('.menu-subtitle');
+    if (menuSub) menuSub.textContent = 'Table of Contents';
+  }
+
+  if (tagline) {
+    const sub = document.getElementById('cover-subtitle');
+    if (sub) sub.textContent = tagline;
+  }
+
+  if (author) {
+    const authorEl = document.getElementById('cover-author');
+    if (authorEl) authorEl.textContent = 'by ' + author;
+  }
+
+  // Inject social links bar if any social links exist
+  if (youtube || email || instagram || tiktok) {
+    const existing = document.getElementById('social-bar');
+    if (!existing) {
+      const bar = document.createElement('div');
+      bar.id = 'social-bar';
+      bar.style.cssText = 'position:fixed; bottom:20px; left:50%; transform:translateX(-50%); display:flex; gap:16px; z-index:200; background:rgba(15,5,8,0.8); border:1px solid rgba(192,96,122,0.2); border-radius:30px; padding:8px 20px; backdrop-filter:blur(8px);';
+
+      if (youtube) {
+        bar.innerHTML += `<a href="${youtube}" target="_blank" style="color:#c0909a; font-size:12px; text-decoration:none; display:flex; align-items:center; gap:5px;">▶ ${youtubeName || 'YouTube'}</a>`;
+      }
+      if (email) {
+        bar.innerHTML += `<a href="mailto:${email}" style="color:#c0909a; font-size:12px; text-decoration:none;">✉ Contact</a>`;
+      }
+      if (instagram) {
+        bar.innerHTML += `<a href="${instagram}" target="_blank" style="color:#c0909a; font-size:12px; text-decoration:none;">◎ Instagram</a>`;
+      }
+      if (tiktok) {
+        bar.innerHTML += `<a href="${tiktok}" target="_blank" style="color:#c0909a; font-size:12px; text-decoration:none;">♪ TikTok</a>`;
+      }
+
+      document.body.appendChild(bar);
+    }
+  }
+}
+
+// ─── MERGE CUSTOM STORIES ─────────────────────────────────────────────────────
+function getMergedPosts() {
+  try {
+    const custom = JSON.parse(localStorage.getItem('qt_custom_stories') || '[]');
+    const customFormatted = custom.map(s => ({
+      title: s.title,
+      date: s.date || '',
+      categories: s.tag ? [s.tag] : ['Custom Story'],
+      url: s.url || (localStorage.getItem('qt_blog_url') || 'https://oyuki79.blogspot.com'),
+      content: s.content ? `<p class="story-drop-cap">${s.content.substring(0, 600)}</p>` : '<p>Story content coming soon.</p>'
+    }));
+    return [...posts, ...customFormatted];
+  } catch { return posts; }
+}
 
 // ─── ADSENSE INJECTION ────────────────────────────────────────────────────────
 function injectAdsense() {
