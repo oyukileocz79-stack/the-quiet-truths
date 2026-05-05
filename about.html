@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — The Quiet Truths</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9804956651134003" crossorigin="anonymous"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #1a0a0f;
+      font-family: 'DM Sans', sans-serif;
+      color: #f5e6e8;
+      min-height: 100vh;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 20%, rgba(114,36,62,0.35) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 80%, rgba(80,20,40,0.4) 0%, transparent 60%);
+      z-index: 0;
+      pointer-events: none;
+    }
+    nav {
+      position: sticky; top: 0;
+      background: rgba(26,10,15,0.95);
+      border-bottom: 1px solid rgba(192,96,122,0.2);
+      padding: 16px 40px;
+      display: flex; align-items: center; justify-content: space-between;
+      z-index: 100;
+      backdrop-filter: blur(8px);
+    }
+    .nav-logo {
+      font-family: 'Lora', serif;
+      font-size: 18px; color: #f5d0d8;
+      text-decoration: none; letter-spacing: 1px;
+    }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px; color: #c0909a;
+      text-decoration: none; letter-spacing: 2px;
+      text-transform: uppercase; transition: color 0.2s;
+    }
+    .nav-links a:hover { color: #f5d0d8; }
+    .container {
+      position: relative; z-index: 1;
+      max-width: 800px; margin: 0 auto;
+      padding: 60px 40px 80px;
+    }
+    h1 {
+      font-family: 'Lora', serif;
+      font-size: 36px; font-weight: 700;
+      color: #f5d0d8;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+    .subtitle {
+      font-size: 13px; color: #a06070;
+      letter-spacing: 3px; text-transform: uppercase;
+      margin-bottom: 40px;
+    }
+    .divider {
+      width: 60px; height: 1px;
+      background: linear-gradient(90deg, #c0607a, transparent);
+      margin-bottom: 40px;
+    }
+    h2 {
+      font-family: 'Lora', serif;
+      font-size: 22px; color: #f5d0d8;
+      margin: 36px 0 14px;
+    }
+    p {
+      font-size: 16px; line-height: 1.9;
+      color: #d0b0b8; margin-bottom: 20px;
+    }
+    blockquote {
+      border-left: 3px solid #c0607a;
+      padding: 16px 24px;
+      margin: 28px 0;
+      background: rgba(192,96,122,0.06);
+      border-radius: 0 8px 8px 0;
+      font-family: 'Lora', serif;
+      font-style: italic;
+      font-size: 17px;
+      color: #f5d0d8;
+      line-height: 1.7;
+    }
+    .author-section {
+      display: flex; gap: 32px; align-items: flex-start;
+      margin: 40px 0;
+      padding: 32px;
+      background: rgba(192,96,122,0.06);
+      border: 1px solid rgba(192,96,122,0.15);
+      border-radius: 12px;
+    }
+    .author-avatar {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: linear-gradient(135deg, #6b1a32, #c0607a);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Lora', serif;
+      font-size: 28px; color: #f5d0d8;
+      flex-shrink: 0;
+    }
+    .author-info h3 {
+      font-family: 'Lora', serif;
+      font-size: 20px; color: #f5d0d8;
+      margin-bottom: 6px;
+    }
+    .author-info .role {
+      font-size: 11px; color: #a06070;
+      letter-spacing: 3px; text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .author-info p { font-size: 14px; margin-bottom: 0; }
+    .categories {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      margin: 28px 0;
+    }
+    .category-tag {
+      padding: 6px 16px;
+      border: 1px solid rgba(192,96,122,0.3);
+      border-radius: 20px;
+      font-size: 11px; color: #c0909a;
+      letter-spacing: 2px; text-transform: uppercase;
+      background: rgba(192,96,122,0.06);
+    }
+    footer {
+      text-align: center; padding: 30px;
+      border-top: 1px solid rgba(192,96,122,0.15);
+      font-size: 12px; color: #6a3040;
+      letter-spacing: 2px;
+    }
+    footer a { color: #c0909a; text-decoration: none; margin: 0 12px; }
+    footer a:hover { color: #f5d0d8; }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">The Quiet Truths</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/about.html">About</a>
+    <a href="/contact.html">Contact</a>
+    <a href="/privacy-policy.html">Privacy</a>
+  </div>
+</nav>
+
+<div class="container">
+  <h1>About This Space</h1>
+  <div class="subtitle">Stories that reveal what people feel but don't say out loud</div>
+  <div class="divider"></div>
+
+  <p>Welcome to <strong>The Quiet Truths</strong> — a collection of short stories, emotional reflections, and honest narratives about the human experience. This is a space built for the moments you feel something deeply but can't quite find the words for yourself.</p>
+
+  <blockquote>"Some truths are too quiet for loud places. This is where they live."</blockquote>
+
+  <h2>What You'll Find Here</h2>
+  <p>Every story on this site is written with one intention: to make you feel less alone. Whether it's the ache of a relationship that slowly faded, the quiet courage of someone rediscovering themselves, or the wonder of stepping through a door into the unknown — these stories are about real emotions, real choices, and real moments that shape who we become.</p>
+
+  <p>The stories here span a range of themes and genres, all united by a commitment to emotional honesty:</p>
+
+  <div class="categories">
+    <span class="category-tag">Emotional Stories</span>
+    <span class="category-tag">Relationship Stories</span>
+    <span class="category-tag">Personal Growth</span>
+    <span class="category-tag">Mystery</span>
+    <span class="category-tag">Science Fiction</span>
+    <span class="category-tag">Romance</span>
+    <span class="category-tag">Self Discovery</span>
+    <span class="category-tag">Life Lessons</span>
+    <span class="category-tag">Fantasy</span>
+  </div>
+
+  <h2>The Author</h2>
+
+  <div class="author-section">
+    <div class="author-avatar">C</div>
+    <div class="author-info">
+      <h3>Cynthia Zamora</h3>
+      <div class="role">Writer · Storyteller · Creator</div>
+      <p>Cynthia Zamora is a writer and storyteller who believes that the most important stories are the ones we're afraid to tell. Her work explores the interior lives of ordinary people navigating love, loss, identity, and the quiet moments that define us. When she's not writing, she's reading, listening to people's stories, and finding beauty in the spaces between words.</p>
+    </div>
+  </div>
+
+  <h2>Why "The Quiet Truths"?</h2>
+  <p>The name came from a simple observation: the most important things people feel are rarely the ones they say out loud. The love they never confessed. The grief they carried in silence. The moment they realized something had to change. These are the quiet truths — the ones that live beneath the surface of everyday conversation, waiting to be named.</p>
+
+  <p>This site is dedicated to naming them. To giving language to the experiences that feel too personal, too complicated, or too vulnerable to speak aloud. Because when we read something that captures exactly what we've been feeling, something shifts. We feel seen. And that matters.</p>
+
+  <h2>A Note on the Stories</h2>
+  <p>All original stories on this site are written by Cynthia Zamora unless otherwise noted. Some stories are inspired by real emotional experiences — not specific people or events, but the universal feelings that connect us all. If a story resonates with you, it's because these feelings are human, and you are not alone in them.</p>
+
+  <p>New stories are added regularly. If you'd like to be notified when new content is published, follow along on our social channels or check back often.</p>
+
+  <p style="margin-top:32px;"><a href="/" style="color:#c0607a; text-decoration:none; font-family:'Lora',serif; font-size:16px;">← Read the Stories</a></p>
+</div>
+
+<footer>
+  <p style="margin-bottom:12px;">© 2026 The Quiet Truths · by Cynthia Zamora</p>
+  <a href="/">Home</a>
+  <a href="/about.html">About</a>
+  <a href="/contact.html">Contact</a>
+  <a href="/privacy-policy.html">Privacy Policy</a>
+</footer>
+</body>
+</html>
